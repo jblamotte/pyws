@@ -1,12 +1,70 @@
 from pyws.functions.args.types.base import Type
 
-__all__ = ('DICT_NAME_KEY', 'Dict', 'List', 'DictOf', 'ListOf')
-
+__all__ = ('DICT_NAME_KEY',
+           'Dict',
+           'List',
+           'DictOf',
+           'ListOf',
+           'FunctionPointerDict'
+           )
+__cached_function_pointer_dict_type__ = {}
 
 DICT_NAME_KEY = 0
 
+
 class BadType(Exception):
     pass
+
+
+class FunctionPointerDict(Type):
+    """
+    Represents dicts, returned by a function pointer (for complex type tree)
+    """
+
+    fields = []
+
+    @classmethod
+    def represents(cls, type_):
+        import operator
+        if operator.isCallable(type_) and not isinstance(type_, type):
+            return isinstance(type_(), dict)
+        return False
+
+    @classmethod
+    def get(cls, type_):
+        type_ = type_()
+        try:
+            dict_name = type_[DICT_NAME_KEY]
+        except KeyError:
+            raise BadType('%s is required for Dict type' % repr(DICT_NAME_KEY))
+
+        if dict_name in __cached_function_pointer_dict_type__:
+            return __cached_function_pointer_dict_type__[dict_name]
+
+        ret = type(dict_name, (Dict,), {'fields': []})
+        __cached_function_pointer_dict_type__[dict_name] = ret
+
+        fields = [
+            isinstance(type_, tuple) and (name,) + type_ or (name, type_)
+            for name, type_ in type_.iteritems() if name != DICT_NAME_KEY]
+
+        ret.add_fields(*fields)
+
+        return ret
+
+    @classmethod
+    def add_fields(cls, *fields):
+        from pyws.functions.args.field import FieldFactory
+        fields_ = []
+        for field in fields:
+            fields_.append(FieldFactory(field))
+        cls.fields += fields_
+
+    @classmethod
+    def _validate(cls, value):
+        return dict(
+            (field.name, field.validate(field.get_value(value)))
+                for field in cls.fields)
 
 
 class Dict(Type):
@@ -100,7 +158,7 @@ def DictOf(name, *fields):
     2
     """
     ret = type(name, (Dict,), {'fields': []})
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     ret.add_fields(*fields)
     return ret
 
