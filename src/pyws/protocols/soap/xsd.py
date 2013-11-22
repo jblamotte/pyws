@@ -48,12 +48,22 @@ class String(SimpleType):
     def get_name(self):
         return 'string', 'http://www.w3.org/2001/XMLSchema'
 
+
 class Boolean(SimpleType):
 
     _represents = args.Boolean
 
     def get_name(self):
         return 'boolean', 'http://www.w3.org/2001/XMLSchema'
+
+
+class Long(SimpleType):
+
+    _represents = args.Long
+
+    def get_name(self):
+        return 'long', 'http://www.w3.org/2001/XMLSchema'
+
 
 class Integer(SimpleType):
 
@@ -119,7 +129,7 @@ class Dict(ComplexType):
             type = TypeFactory(field.type, self.ns, self.nsmap)
             element = et.SubElement(sequence,
                 xsd_name('element'), name=field.name,
-                type=qname(*(type.name + (self.nsmap, ))))
+                type=qname(*(type.name + (self.nsmap,))))
             element.set('nillable', 'true')
             type.get_types(types)
 
@@ -135,14 +145,15 @@ class List(ComplexType):
         type = TypeFactory(self.type.element_type, self.ns, self.nsmap)
         et.SubElement(sequence,
             xsd_name('element'), name='item',
-            type=qname(*(type.name + (self.nsmap, ))),
+            type=qname(*(type.name + (self.nsmap,))),
             minOccurs='0', maxOccurs='unbounded')
         type.get_types(types)
 
 
 # The order matters: DateTime should be placed before Date.
 # Date is a superclass of DateTime, thus Date will catch all DateTime fields.
-__types__ = (String, Boolean, Integer, Float, DateTime, Date, Dict, List)
+__types__ = (String, Boolean, Long, Integer, Float, DateTime, Date, Dict, List)
+
 
 def TypeFactory(type, ns=None, nsmap=None):
     for x in __types__:

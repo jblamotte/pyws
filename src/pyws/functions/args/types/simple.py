@@ -5,7 +5,13 @@ from time import mktime
 
 from pyws.functions.args.types.base import Type
 
-__all__ = ('String', 'Boolean', 'Integer', 'Float', 'Date', 'DateTime', )
+__all__ = ('String',
+           'Boolean',
+           'Long',
+           'Integer',
+           'Float',
+           'Date',
+           'DateTime',)
 
 
 class String(Type):
@@ -27,6 +33,7 @@ class String(Type):
         except UnicodeDecodeError:
             return unicode(value, 'utf-8')
 
+
 class Boolean(Type):
     """
     Represents boolean values, simplified form is ``bool``, default
@@ -47,6 +54,19 @@ class Boolean(Type):
     @classmethod
     def serialize(cls, value):
         return unicode(value).lower()
+
+
+class Long(Type):
+    """
+    Represents long numbers, simplified form is ``long``, default
+    ``none_value`` is ``None``.
+    """
+
+    _represents = long
+
+    @classmethod
+    def _validate(cls, value):
+        return long(value)
 
 
 class Integer(Type):
@@ -98,6 +118,7 @@ class Date(Type):
 
 
 tz_re = re.compile('((\\+|-)(\d\d):?(\d\d))$')
+
 
 class DateTime(Date):
     """
