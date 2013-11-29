@@ -5,13 +5,8 @@ from time import mktime
 
 from pyws.functions.args.types.base import Type
 
-__all__ = ('String',
-           'Boolean',
-           'Long',
-           'Integer',
-           'Float',
-           'Date',
-           'DateTime',)
+__all__ = (
+    'String', 'Boolean', 'Long', 'Integer', 'Float', 'Date', 'DateTime',)
 
 
 class String(Type):

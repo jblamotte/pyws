@@ -129,7 +129,7 @@ class Dict(ComplexType):
             type = TypeFactory(field.type, self.ns, self.nsmap)
             element = et.SubElement(sequence,
                 xsd_name('element'), name=field.name,
-                type=qname(*(type.name + (self.nsmap,))))
+                type=qname(*(type.name + (self.nsmap, ))))
             element.set('nillable', 'true')
             type.get_types(types)
 
@@ -145,7 +145,7 @@ class List(ComplexType):
         type = TypeFactory(self.type.element_type, self.ns, self.nsmap)
         et.SubElement(sequence,
             xsd_name('element'), name='item',
-            type=qname(*(type.name + (self.nsmap,))),
+            type=qname(*(type.name + (self.nsmap, ))),
             minOccurs='0', maxOccurs='unbounded')
         type.get_types(types)
 

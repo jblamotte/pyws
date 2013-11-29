@@ -1,12 +1,7 @@
 from pyws.functions.args.types.base import Type
 
-__all__ = ('DICT_NAME_KEY',
-           'Dict',
-           'List',
-           'DictOf',
-           'ListOf',
-           'FunctionPointerDict'
-           )
+__all__ = (
+    'DICT_NAME_KEY', 'Dict', 'List', 'DictOf', 'ListOf', 'FunctionPointerDict')
 __cached_function_pointer_dict_type__ = {}
 
 DICT_NAME_KEY = 0
@@ -18,7 +13,8 @@ class BadType(Exception):
 
 class FunctionPointerDict(Type):
     """
-    Represents dicts, returned by a function pointer (for complex type tree)
+    Represents dicts, returned by a function pointer, like lambda.
+    Refer to type ``Dict`` for additionnal informations.
     """
 
     fields = []
